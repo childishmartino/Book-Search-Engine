@@ -1,4 +1,4 @@
-const { Book, User } = require('../models');
+const { User } = require('../models');
 const { AuthenticationError } = require('apollo-server-express');
 const { signToken } = require('../utils/auth');
 
@@ -7,11 +7,9 @@ const resolvers = {
         me: async (parent, args, context) => {
             if (context.user) {
                 const userData = await User.findOne({ _id: context.user._id })
-                    .select('-__v -password')
-
+                    // .select('-__v -password')
                 return userData;
             }
-
             throw new AuthenticationError('user must login');
         },
     },
@@ -21,26 +19,28 @@ const resolvers = {
             const user = await User.create(args)
             const token = signToken(user)
             return {
-                user,
                 token,
+                user
             };
         },
 
         login: async (parent, { email, password }) => {
-            const user = await User.findOne({ email })
+            const user = await User.findOne({ email });
+            
             if (!user) {
                 throw new AuthenticationError('user does not exist')
-            };
+            }
 
-            const correctPassword = await user.isCorrectPassword(password)
+            const correctPassword = await user.isCorrectPassword(password);
+
             if (!correctPassword) {
                 throw new AuthenticationError('wrong password')
-            };
+            }
 
-            const token = signToken(user)
+            const token = signToken(user);
             return {
-                user,
                 token,
+                user
             };
         },
 
@@ -63,7 +63,7 @@ const resolvers = {
                     { _id: context.user._id },
                     { $pull: { savedBooks: { bookId }}},
                     { new: true }
-                )
+                );
 
                 return updatedUser
             }
