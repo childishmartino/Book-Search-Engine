@@ -51,7 +51,9 @@ const SearchBooks = () => {
     } catch (err) {
       console.error(err);
     }
+    // console.log(typeof(searchedBooks))
   };
+  // console.log(searchedBooks)
 
   const [saveBook] = useMutation(SAVE_BOOK);
 

@@ -1,22 +1,40 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import { ApolloProvider } from '@apollo/react-hooks';
-import ApolloClient from 'apollo-boost';
+// import { ApolloProvider } from '@apollo/react-hooks'; updating to apollo v4
+// import ApolloClient from 'apollo-boost'; updating to apollo v4
+import { ApolloClient, ApolloProvider, InMemoryCache, createHttpLink} from '@apollo/client';
+import { setContext } from "@apollo/client/link/context";
 import SearchBooks from './pages/SearchBooks';
 import SavedBooks from './pages/SavedBooks';
 import Navbar from './components/Navbar';
 
-const client = new ApolloClient({
-  request: operation => {
-    const token = localStorage.getItem('id_token');
+const httpLink = createHttpLink({
+  uri: '/graphql',
+})
 
-    operation.setContext({
-      headers: {
-        authorization: token ? `Bearer ${token}` : ''
-      }
-    });
-  },
-  uri: '/graphql'
+const auth = setContext((_, { headers }) => {
+  const token = localStorage.getItem('id_token');
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? `Bearer ${token}` : '',
+    }
+  }
+})
+
+const client = new ApolloClient({
+  // request: operation => {
+  //   const token = localStorage.getItem('id_token');
+
+  //   operation.setContext({
+  //     headers: {
+  //       authorization: token ? `Bearer ${token}` : ''
+  //     }
+  //   });
+  // },
+  cache: new InMemoryCache(),
+  link: auth.concat(httpLink),
+  // uri: '/graphql'
 });
 
 function App() {

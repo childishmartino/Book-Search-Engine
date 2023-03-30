@@ -1,5 +1,6 @@
 const { User } = require('../models');
-const { AuthenticationError } = require('apollo-server-express');
+const { GraphQLError } = require('graphql');
+// const { AuthenticationError } = require('apollo-server-express')
 const { signToken } = require('../utils/auth');
 
 const resolvers = {
@@ -10,7 +11,7 @@ const resolvers = {
                     // .select('-__v -password')
                 return userData;
             }
-            throw new AuthenticationError('user must login');
+            throw new GraphQLError('user must login');
         },
     },
 
@@ -28,13 +29,13 @@ const resolvers = {
             const user = await User.findOne({ email });
             
             if (!user) {
-                throw new AuthenticationError('user does not exist')
+                throw new GraphQLError('user does not exist')
             }
 
             const correctPassword = await user.isCorrectPassword(password);
 
             if (!correctPassword) {
-                throw new AuthenticationError('wrong password')
+                throw new GraphQLError('wrong password')
             }
 
             const token = signToken(user);
@@ -54,7 +55,7 @@ const resolvers = {
                 return updatedUser
             };
 
-            throw new AuthenticationError('you need to be logged in');
+            throw new GraphQLError('you need to be logged in');
         },
 
         removeBook: async (parent, { bookId }, context) => {
@@ -68,7 +69,7 @@ const resolvers = {
                 return updatedUser
             }
 
-            throw new AuthenticationError('you need to be logged in')
+            throw new GraphQLError('you need to be logged in')
         }
     }
 };
