@@ -1,4 +1,3 @@
-//import gql from 'graphql-tag'; updating to apollo v4
 import { gql } from '@apollo/client';
 
 export const LOGIN_USER = gql`

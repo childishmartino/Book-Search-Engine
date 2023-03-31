@@ -1,22 +1,17 @@
 const express = require('express');
 const path = require('path');
 const { ApolloServer } = require('@apollo/server');
-// const { ApolloServer } = require('apollo-server-express'); updating to apollo server 4
 const { expressMiddleware } = require('@apollo/server/express4')
 const db = require('./config/connection');
 const { typeDefs, resolvers } = require('./schemas');
 const { authMiddleware } = require('./utils/auth');
-const { ApolloServerPluginDrainHttpServer } = require('@apollo/server/plugin/drainHttpServer')
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 const server = new ApolloServer({
     typeDefs,
     resolvers,
-    // context: authMiddleware
 });
-
-// server.applyMiddleware({ app })
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
